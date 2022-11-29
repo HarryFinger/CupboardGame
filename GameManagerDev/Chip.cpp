@@ -1,9 +1,30 @@
 #include "Chip.h"
-
-Chip::Chip(const sf::IntRect& rect, const float& X, const float& Y, const std::string& path) :
+#include <iostream>
+Chip::Chip(const sf::IntRect& rect, const float X, const float Y, const std::string& path) :
 	GameObject(rect, X, Y, path)
 {
 	SetTypeOnConstruct(rect);
+	original_color = sprite.getColor();
+}
+
+void Chip::Flicker(const float delta_time)
+{
+	time_accumulator += delta_time; //potential inf
+	sf::Uint8 opasity = (sin(time_accumulator * frequency) + 1)*128;
+
+	sprite.setColor(sf::Color(255, 255, 255, opasity));
+}
+
+void Chip::StopFlicker()
+{
+	sprite.setColor(original_color);
+}
+
+void Chip::Move(const float X, const float Y)
+{
+	X_ = X; 
+	Y_ = Y;
+	sprite.setPosition(X_, Y_);
 }
 
 void Chip::SetTypeOnConstruct(const sf::IntRect& rect)
@@ -20,5 +41,10 @@ void Chip::SetTypeOnConstruct(const sf::IntRect& rect)
 		chip_type = ChipType::Red;
 	if (rect.left == 500)
 		chip_type = ChipType::Black;
+	if (rect.left == 600)
+		chip_type = ChipType::White;
+	if (rect.left == 700)
+		chip_type = ChipType::Orange;
+	if (rect.left == 800)
+		chip_type = ChipType::Cyan;
 }
-

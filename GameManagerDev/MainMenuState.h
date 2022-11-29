@@ -8,13 +8,13 @@
 
 //class Button;
 
-class MainMenuState : public IState
+class MainMenuState final : public IState
 {
 
 public:
 	MainMenuState();
 	void processInput(const sf::Event& event) override;
-	void update(const float& delta_time);
+	void update(const float delta_time);
 	void render(sf::RenderWindow& window) override;
 
 private:

@@ -9,21 +9,30 @@
 #include <memory>
 #include <vector>
 
-class GameMainState : public IState
+class GameMainState final : public IState
 {
 
 public:
 	GameMainState();
 
 	void processInput(const sf::Event& event);
-	void update(const float& delta_time);
+	void update(const float delta_time);
 	void render(sf::RenderWindow& window) override;
+private:
+	void PickOrUnpickChip(const float delta_time);
+	std::shared_ptr<Cell> GetCellUnderCursor(const float X, const float Y);
+	std::shared_ptr<Chip> GetChipUnderCursor(const float X, const float Y);
+	bool IsAnyWiresAround(std::shared_ptr<Chip> sp_chip);
+	//std::vector<std::shared_ptr<Cell>> GetCellArrayAroundWires(std::shared_ptr<Chip> sp_chip);
 
 private:
-	std::vector<std::unique_ptr<Chip>> chips_container;
-	std::vector<std::unique_ptr<Wire>> vertical_wires_container;
-	std::vector<std::unique_ptr<Wire>> horisontal_wires_container;
-	std::vector<std::unique_ptr<Cell>> cells_container;
+	std::vector<std::shared_ptr<Chip>> chips_container;
+	std::vector<std::shared_ptr<Wire>> vertical_wires_container;
+	std::vector<std::shared_ptr<Wire>> horisontal_wires_container;
+	std::vector<std::shared_ptr<Cell>> cells_container;
+
+	std::shared_ptr<Chip> current_chip = nullptr;
+	bool is_chip_picked = false;
 
 	sf::Texture game_menu_texture;
 	sf::Sprite game_menu_sprite;

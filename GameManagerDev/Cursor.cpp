@@ -29,6 +29,6 @@ sf::CircleShape Cursor::getCirShape()
 
 void Cursor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(cir_shape);
+	//target.draw(cir_shape);
 	target.draw(cursor_sprite);
 }

@@ -10,7 +10,7 @@ void Manager::processInput(const sf::Event& event)
 	current_state->processInput(event);
 }
 
-void Manager::update(const float& delta_time)
+void Manager::update(const float delta_time)
 {
 	SwitchStateIfNeed();
 	current_state->update(delta_time);

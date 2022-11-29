@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-class Cursor: public sf::Drawable
+class Cursor final : public sf::Drawable
 {
 public:
 	Cursor(const std::string& path);

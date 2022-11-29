@@ -7,12 +7,13 @@ class GameObject : public sf::Drawable
 {
 public:
 	GameObject(const sf::IntRect& rect,
-			const float& X, const float& Y, const std::string& path);
+			const float X, const float Y, const std::string& path);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-	void setObjectXY(const float& X, const float& Y);
+	void setObjectXY(const float X, const float Y);
 	bool IsContains(float X, float Y);
 	float getX() { return X_; }
 	float getY() { return Y_; }
+	virtual ~GameObject() = 0;
 	
 protected:
 	sf::Texture texture;

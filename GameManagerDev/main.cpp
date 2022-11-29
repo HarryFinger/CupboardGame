@@ -1,9 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <fstream>
+
 #include "Manager.h"
 #include "Cursor.h"
 
-const float FPS = 1.f / 30.f;
+const float FPS = 1.f / 20.f;
 const uint32_t WINDOW_SIZE = 1000;
 
 int main()
@@ -17,15 +19,19 @@ int main()
     float prev_time = main_clock.getElapsedTime().asSeconds();
     float time_accumulator = FPS;
 
+    //std::ofstream log_file("../GameManagerDev/data/log.txt");
+
     while (window.isOpen())
     {
-        //delta time + fps calculation
+        //loop time calculation
         float current_time = main_clock.getElapsedTime().asSeconds();
-        float delta_time = current_time - prev_time;
-        time_accumulator += delta_time;
+        float loop_time = current_time - prev_time;
+        time_accumulator += loop_time;
+
         prev_time = current_time;
 
-        if (time_accumulator >= FPS)
+        /*if (time_accumulator >= FPS)*/
+        while (time_accumulator >= FPS)
         {
             //event state
             sf::Event event;
@@ -37,14 +43,14 @@ int main()
             }
 
             //update state
-            manager.update(delta_time);
+            manager.update(FPS);
 
             //render state
             window.clear();
             manager.render(window);
 
             window.display();
-            time_accumulator = 0;
+            time_accumulator -= FPS;
         }
     }
 

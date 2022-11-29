@@ -31,7 +31,7 @@ void MainMenuState::processInput(const sf::Event& event)
 	}
 }
 
-void MainMenuState::update(const float& delta_time)
+void MainMenuState::update(const float delta_time)
 {
 	cursor.setMouseXY(mouse_x, mouse_y);
 	//start game
