@@ -41,6 +41,7 @@ GameMainState::GameMainState(): game_settings("../GameManagerDev/data/GameState/
 	}
 }
 
+//INPUT STATE
 void GameMainState::processInput(const sf::Event& event)
 {
 	if (event.key.code == sf::Keyboard::Escape && (event.type == sf::Event::KeyPressed))
@@ -60,6 +61,7 @@ void GameMainState::processInput(const sf::Event& event)
 	}
 }
 
+//UPDATE STATE
 void GameMainState::update(const float delta_time)
 {
 	cursor.setMouseXY(mouse_x, mouse_y);
@@ -67,8 +69,19 @@ void GameMainState::update(const float delta_time)
 	
 	if (current_chip != nullptr)
 	{	
+		available_cells_array.clear();
+		available_cells_array = AvailableCellsArray(current_chip);
+		if (!available_cells_array.empty())
+		{
+			for (const auto& cell_el: available_cells_array)
+			{
+				cell_el->ChangeFrameView(FrameType::Yellow);
+			}
+		}
+		
 		auto chip = GetChipUnderCursor(mouse_x, mouse_y);
 		auto cell = GetCellUnderCursor(mouse_x, mouse_y);
+		// 
 		// нужен массив ячеек, не занятые чипом, имеющие связи с ориджином
 		// только в эти ячейки я могу муваться
 		// 
@@ -78,14 +91,24 @@ void GameMainState::update(const float delta_time)
 		//3.если нет, выкидываем свободную ячейку из массива (или добавляем такие элементы в новый массив)
 		//4.возвращаем такой массив
 
+		//TODO availible container должен чекать связи
+
 		if (cell && !chip )
 		{
 			current_chip->Move(cell.get()->getX(), cell.get()->getY());
 		}
 	}
+	else
+	{
+		for (const auto& cell_el : cells_container) //change color to all cells on GREEN
+		{
+			cell_el->ChangeFrameView(FrameType::Green);
+		}
+	}
 
 }
 
+//RENDER STATE
 void GameMainState::render(sf::RenderWindow& window)
 {
 	window.draw(game_menu_sprite);
@@ -101,6 +124,10 @@ void GameMainState::render(sf::RenderWindow& window)
 
 	for (const auto& el : horisontal_wires_container)
 		window.draw(*el.get());
+
+
+	/*for (const auto& el: available_cells_array)
+		window.draw(*el.get());*/
 
 	window.draw(cursor);
 }
@@ -160,93 +187,33 @@ std::shared_ptr<Chip> GameMainState::GetChipUnderCursor(const float X, const flo
 	return nullptr;
 }
 
-bool GameMainState::IsAnyWiresAround(std::shared_ptr<Chip> sp_chip)
+std::vector<std::shared_ptr<Cell>> GameMainState::AvailableCellsArray(const std::shared_ptr<Chip> sp_chip)
 {
-	float X = sp_chip->getX();
-	float Y = sp_chip->getY();
-	for (const auto& el : vertical_wires_container)
+	std::vector<std::shared_ptr<Cell>> free_cell_array;
+	for (const auto& cell_el : cells_container)
 	{
-		if (el->IsContains(X, Y - MODULE))
+		if (CellIsEmpty(cell_el))
 		{
-			std::cout << "CONTAINS WIRE\n";
-			return true;
-		}
-		if (el->IsContains(X, Y + MODULE))
-		{
-			std::cout << "CONTAINS WIRE\n";
-			return true;
+			free_cell_array.push_back(cell_el);
 		}
 	}
-	for (const auto& el : horisontal_wires_container)
-	{
-		if (el->IsContains(X - MODULE, Y))
-		{
-			std::cout << "CONTAINS WIRE\n";
-			return true;
-		}
-		if (el->IsContains(X + MODULE, Y))
-		{
-			std::cout << "CONTAINS WIRE\n";
-			return true;
-		}
-	}
-
-	return false;
+	return free_cell_array;
 }
 
-//std::vector<std::shared_ptr<Cell>> GameMainState::GetCellArrayAroundWires(std::shared_ptr<Chip> sp_chip)
-//{
-//	std::vector<std::shared_ptr<Wire>> wires_arround_array;
-//	float X = sp_chip->getX();
-//	float Y = sp_chip->getY();
-//	for (const auto& el : vertical_wires_container)
-//	{
-//		if (el->IsContains(X, Y - MODULE))
-//		{
-//			wires_arround_array.push_back(el);
-//		}
-//		if (el->IsContains(X, Y + MODULE))
-//		{
-//			wires_arround_array.push_back(el);
-//		}
-//	}
-//	for (const auto& el : horisontal_wires_container)
-//	{
-//		if (el->IsContains(X - MODULE, Y))
-//		{
-//			wires_arround_array.push_back(el);
-//		}
-//		if (el->IsContains(X + MODULE, Y))
-//		{
-//			wires_arround_array.push_back(el);
-//		}
-//	}
-//	std::vector<std::shared_ptr<Cell>> cell_array_around_wires;
-//
-//	for (const auto& el : wires_arround_array)
-//	{
-//		float X = el->getX();
-//		float Y = el->getY();
-//		for (const auto& cell_el : cells_container)
-//		{
-//			if (cell_el->IsContains(X, Y - MODULE))
-//			{
-//				cell_array_around_wires.push_back(cell_el);
-//			}
-//			if (cell_el->IsContains(X, Y + MODULE))
-//			{
-//				cell_array_around_wires.push_back(cell_el);
-//			}
-//			if (cell_el->IsContains(X - MODULE, Y))
-//			{
-//				cell_array_around_wires.push_back(cell_el);
-//			}
-//			if (cell_el->IsContains(X + MODULE, Y))
-//			{
-//				cell_array_around_wires.push_back(cell_el);
-//			}
-//		}
-//	}
-//
-//	return cell_array_around_wires;
-//}
+bool GameMainState::CellIsEmpty(const std::shared_ptr<Cell> cell) const
+{
+	bool is_empty = 0;
+	for (const auto& chip_el : chips_container)
+	{
+		if (cell->IsContains(chip_el->getX(), chip_el->getY()))
+		{
+			is_empty = 0;
+			return is_empty;
+		}
+		else
+		{
+			is_empty = 1;
+		}
+	}
+	return is_empty;
+}

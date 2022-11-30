@@ -2,7 +2,8 @@
 
 Manager::Manager()
 {
-		current_state = std::make_unique<MainMenuState>();
+		//current_state = std::make_unique<MainMenuState>();
+		current_state = std::make_unique<GameMainState>();
 }
 
 void Manager::processInput(const sf::Event& event)

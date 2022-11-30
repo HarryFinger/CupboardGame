@@ -110,6 +110,7 @@ void GameSettings::PrintGameData()
 	std::cout << "\n";
 	for (const auto& it : gamedata.wires)
 		std::cout << it.x << "," << it.y << " ";
+	std::cout << "\n";
 }
 
 //simple basic check

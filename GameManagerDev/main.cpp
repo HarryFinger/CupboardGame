@@ -5,12 +5,11 @@
 #include "Manager.h"
 #include "Cursor.h"
 
-const float FPS = 1.f / 20.f;
+const float FPS = 1.f / 30.f;
 const uint32_t WINDOW_SIZE = 1000;
 
 int main()
 {
-
     sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "ProjectX", sf::Style::Titlebar | sf::Style::Close);
     window.setMouseCursorVisible(0);
     Manager manager;
