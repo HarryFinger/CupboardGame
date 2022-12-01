@@ -6,6 +6,7 @@
 #include "IState.h"
 #include "GameMainState.h"
 #include "MainMenuState.h"
+#include "Cursor.h"
 
 enum class StateTypeTask
 {
@@ -21,6 +22,7 @@ private:
 	static StateTypeTask state_type_task;
 	std::unique_ptr<IState> current_state;
 	sf::RenderWindow* window;
+	//Cursor cursor;
 
 public:
 	Manager();

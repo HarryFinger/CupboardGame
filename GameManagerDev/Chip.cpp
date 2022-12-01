@@ -10,7 +10,7 @@ Chip::Chip(const sf::IntRect& rect, const float X, const float Y, const std::str
 void Chip::Flicker(const float delta_time)
 {
 	time_accumulator += delta_time; //potential inf
-	sf::Uint8 opasity = (sin(time_accumulator * frequency) + 1)*128;
+	sf::Uint8 opasity = (sin(time_accumulator * frequency) + 1)*90 + 65;
 
 	sprite.setColor(sf::Color(255, 255, 255, opasity));
 }
@@ -25,6 +25,11 @@ void Chip::Move(const float X, const float Y)
 	X_ = X; 
 	Y_ = Y;
 	sprite.setPosition(X_, Y_);
+}
+
+void Chip::update(const float delta_time)
+{
+
 }
 
 void Chip::SetTypeOnConstruct(const sf::IntRect& rect)

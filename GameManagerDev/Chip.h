@@ -23,6 +23,7 @@ public:
 	void Flicker(const float delta_time);
 	void StopFlicker();
 	void Move(const float X, const float Y);
+	void update(const float delta_time);
 private:
 	void SetTypeOnConstruct(const sf::IntRect& rect);
 	sf::Vector2f original_scale;

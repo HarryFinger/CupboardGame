@@ -21,8 +21,8 @@ private:
 	sf::Texture main_menu_texture;
 	sf::Sprite main_menu_sprite;
 	Cursor cursor;
-	float mouse_x = 500.f;
-	float mouse_y = 500.f;
+	float mouse_x;
+	float mouse_y;
 	bool is_left_button_clicked = false;
 };
 

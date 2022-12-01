@@ -5,6 +5,10 @@ static const uint32_t MODULE = 100;
 
 GameMainState::GameMainState(): game_settings("../GameManagerDev/data/GameState/CustomData.txt"), cursor("../GameManagerDev/data/cursor.png")
 {
+	sf::Mouse mouse;
+	mouse_x = static_cast<float>(mouse.getPosition().x);
+	mouse_y = static_cast<float>(mouse.getPosition().y);
+
 	game_menu_texture.loadFromFile("../GameManagerDev/data/GameState/field.png");
 	game_menu_sprite.setTexture(game_menu_texture);
 	win_object = std::make_unique<WinObject>(sf::IntRect(0,0, 800, 400), 500.f, 500.f);
@@ -75,6 +79,11 @@ void GameMainState::processInput(const sf::Event& event)
 void GameMainState::update(const float delta_time)
 {
 	cursor.setMouseXY(mouse_x, mouse_y); //cursor movement
+	cursor.update(delta_time);
+	for (const auto& chip_el : chips_container)
+	{
+		chip_el->update(delta_time);
+	}
 
 	if (!is_win_state)
 	{
@@ -96,9 +105,12 @@ void GameMainState::update(const float delta_time)
 					if (IfCellIsInAvailibleArray(target_cell))
 					{
 						//MOVE STATE!!!
-						current_chip->Move(target_cell->getX(), target_cell->getY());
-						UnpickChip();
-
+						if (is_left_button_clicked)
+						{
+							current_chip->Move(target_cell->getX(), target_cell->getY());
+							UnpickChip();
+						}
+						
 					}
 				}
 			}
@@ -141,8 +153,6 @@ void GameMainState::render(sf::RenderWindow& window)
 	}
 
 	window.draw(cursor);
-
-	
 }
 
 void GameMainState::PickOrUnpickChip(const float delta_time)

@@ -53,8 +53,8 @@ private:
 	GameSettings game_settings;
 	std::unique_ptr<WinObject> win_object;
 	Cursor cursor;
-	float mouse_x = 500.f;
-	float mouse_y = 500.f;
+	float mouse_x;
+	float mouse_y;
 	bool is_left_button_clicked = false;
 	bool is_win_state = 0;
 };

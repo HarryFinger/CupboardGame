@@ -6,6 +6,10 @@
 
 MainMenuState::MainMenuState() : cursor("../GameManagerDev/data/cursor.png")
 {
+	sf::Mouse mouse;
+	mouse_x = static_cast<float>(mouse.getPosition().x);
+	mouse_y = static_cast<float>(mouse.getPosition().y);
+
 	main_menu_texture.loadFromFile("../GameManagerDev/data/MainMenu/menu.png");
 	main_menu_sprite.setTexture(main_menu_texture);
 	button_container.push_back(
