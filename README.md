@@ -1,10 +1,10 @@
-Used language: C++, SFML library, VisualStudio 2022
+Used language: C++, SFML library, VisualStudio 2022  
 Requirement: Windows 10/11.
 SFML library was used in the project.
 
-rules: you need to put the chips in the right places
-input: mouse
-"esc" to back in main menu
+Rules: you need to put the chips in the right places  
+Input: mouse  
+"ESC" to back in main menu
 
 Execution file into Cupboards_build
 To build you need SFML
