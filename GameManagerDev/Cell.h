@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-const std::string DEFAULT_CELLS_PATH = "../GameManagerDev/data/GameState/cells.png";
+static const std::string DEFAULT_CELLS_PATH = "../GameManagerDev/data/GameState/cells.png";
 
 enum class FrameType
 {

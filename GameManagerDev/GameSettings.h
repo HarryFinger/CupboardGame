@@ -37,9 +37,8 @@ public:
 	uint32_t GetChipsCount() { return gamedata.chips_count; }
 	uint32_t GetWiresNumber() { return gamedata.number_of_wires; }
 	std::vector<VectorInt> GetLocCoordVector() { return gamedata.locations_coordinates; }
-	std::vector<uint32_t> GetStartLocVector() { return gamedata.chips_start_location; }
-	std::vector<uint32_t> GetWinLocVector() { return gamedata.chips_win_location; }
-	//std::vector<sf::Vector2f> GetWiresVector() { return gamedata.wires; }
+	std::vector<uint32_t> GetStartLocations() { return gamedata.chips_start_location; }
+	std::vector<uint32_t> GetWinLocations() { return gamedata.chips_win_location; }
 	std::vector<sf::Vector2f> GetVerticalWiresVector() { return gamedata.vertical_wires_coordinates; }
 	std::vector<sf::Vector2f> GetHorisontalWiresVector() { return gamedata.horisontal_wires_coordinates; }
 

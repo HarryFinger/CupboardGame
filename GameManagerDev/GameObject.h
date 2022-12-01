@@ -11,6 +11,7 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	void setObjectXY(const float X, const float Y);
 	bool IsContains(float X, float Y);
+	sf::Sprite GetSprite() { return sprite;}
 	float getX() { return X_; }
 	float getY() { return Y_; }
 	virtual ~GameObject() = 0;

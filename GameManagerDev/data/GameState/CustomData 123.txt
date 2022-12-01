@@ -1,0 +1,33 @@
+number of locations:
+9
+chips count:
+6
+number of wires:
+6
+
+field locations coordinates:
+100,100
+300,100
+500,100
+100,300
+300,300
+500,300
+100,500
+300,500
+500,500
+
+start state:
+1,2,3,7,8,9
+
+win state:
+7,8,9,1,2,3
+
+wires:
+1,4
+
+3,6
+4,5
+
+4,7
+5,8
+6,9

@@ -6,8 +6,6 @@
 #include <memory>
 #include <vector>
 
-//class Button;
-
 class MainMenuState final : public IState
 {
 

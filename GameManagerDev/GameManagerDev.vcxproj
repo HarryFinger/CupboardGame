@@ -146,6 +146,7 @@
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="IState.cpp" />
+    <ClCompile Include="WinObject.cpp" />
     <ClCompile Include="Wire.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +160,7 @@
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="IState.h" />
+    <ClInclude Include="WinObject.h" />
     <ClInclude Include="Wire.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
