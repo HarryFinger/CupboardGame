@@ -5,10 +5,16 @@
 #include "Manager.h"
 #include "Cursor.h"
 
-const float FPS = 1.f / 30.f;
+const float FPS = 1.f / 60.f;
 const uint32_t WINDOW_SIZE = 1000;
 
+#ifdef GAME_DEBUG
 int main()
+#endif
+
+#ifdef RELEASE
+int WinMain()
+#endif
 {
     sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "ProjectX", sf::Style::Titlebar | sf::Style::Close);
     window.setMouseCursorVisible(0);
@@ -18,7 +24,7 @@ int main()
     float prev_time = main_clock.getElapsedTime().asSeconds();
     float time_accumulator = FPS;
 
-    //std::ofstream log_file("../GameManagerDev/data/log.txt");
+    //std::ofstream log_file("./data/log.txt");
 
     while (window.isOpen())
     {

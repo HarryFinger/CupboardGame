@@ -22,7 +22,7 @@ private:
 	static StateTypeTask state_type_task;
 	std::unique_ptr<IState> current_state;
 	sf::RenderWindow* window;
-	//Cursor cursor;
+	static std::string path_to_file;
 
 public:
 	Manager();
@@ -30,7 +30,7 @@ public:
 	void processInput(const sf::Event& event);
 	void update(const float delta_time);
 	void render(sf::RenderWindow& window);
-	static void SwitchOnState(const StateTypeTask& task);
+	static void SwitchOnState(const StateTypeTask& task, const std::string& path_to_file = "");
 	
 private:
 	void SwitchStateIfNeed();

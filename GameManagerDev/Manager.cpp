@@ -1,9 +1,10 @@
 #include "Manager.h"
 
+
 Manager::Manager()
 {
-		//current_state = std::make_unique<MainMenuState>();
-		current_state = std::make_unique<GameMainState>();
+		current_state = std::make_unique<MainMenuState>();
+		//current_state = std::make_unique<GameMainState>();
 }
 
 void Manager::processInput(const sf::Event& event)
@@ -34,7 +35,7 @@ void Manager::SwitchStateIfNeed()
 		Manager::state_type_task = StateTypeTask::DO_NOTHING;
 		break;
 	case StateTypeTask::GAME_MAIN_STATE:
-		current_state = std::make_unique<GameMainState>();
+		current_state = std::make_unique<GameMainState>(path_to_file);
 		Manager::state_type_task = StateTypeTask::DO_NOTHING;
 		break;
 	case StateTypeTask::CLOSE_GAME_STATE:
@@ -42,9 +43,9 @@ void Manager::SwitchStateIfNeed()
 	}
 }
 
-
-void Manager::SwitchOnState(const StateTypeTask& task)
+void Manager::SwitchOnState(const StateTypeTask& task, const std::string& path)
 {
+	path_to_file = path;
 	switch (task)
 	{
 	case StateTypeTask::DO_NOTHING:
@@ -63,3 +64,4 @@ void Manager::SwitchOnState(const StateTypeTask& task)
 }
 
 StateTypeTask Manager::state_type_task = StateTypeTask::DO_NOTHING;
+std::string Manager::path_to_file = "";

@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-static const std::string DEFAULT_CHIP_PATH = "../GameManagerDev/data/GameState/chips.png";
+static const std::string DEFAULT_CHIP_PATH = "./data/GameState/chips.png";
 
 enum class ChipType
 {

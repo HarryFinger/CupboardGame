@@ -3,6 +3,7 @@
 Button::Button( const sf::IntRect& rect, const float X, const float Y, const std::string& path) :
 	GameObject(rect, X, Y, path)
 {
+	sprite.setScale(0.95f, 0.95f);
 	original_scale = sprite.getScale();
 	original_color = sprite.getColor();
 }

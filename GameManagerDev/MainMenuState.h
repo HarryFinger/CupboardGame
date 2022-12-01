@@ -24,5 +24,6 @@ private:
 	float mouse_x;
 	float mouse_y;
 	bool is_left_button_clicked = false;
+
 };
 

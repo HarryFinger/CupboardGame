@@ -3,13 +3,13 @@
 static const float OFFSET = 50.f;
 static const uint32_t MODULE = 100;
 
-GameMainState::GameMainState(): game_settings("../GameManagerDev/data/GameState/CustomData.txt"), cursor("../GameManagerDev/data/cursor.png")
+GameMainState::GameMainState(const std::string& path): game_settings(path), cursor("./data/cursor.png")
 {
 	sf::Mouse mouse;
 	mouse_x = static_cast<float>(mouse.getPosition().x);
 	mouse_y = static_cast<float>(mouse.getPosition().y);
 
-	game_menu_texture.loadFromFile("../GameManagerDev/data/GameState/field.png");
+	game_menu_texture.loadFromFile("./data/GameState/field.png");
 	game_menu_sprite.setTexture(game_menu_texture);
 	win_object = std::make_unique<WinObject>(sf::IntRect(0,0, 800, 400), 500.f, 500.f);
 
@@ -80,17 +80,35 @@ void GameMainState::update(const float delta_time)
 {
 	cursor.setMouseXY(mouse_x, mouse_y); //cursor movement
 	cursor.update(delta_time);
-	for (const auto& chip_el : chips_container)
+
+	switch (game_phase)
 	{
-		chip_el->update(delta_time);
+	case GamePhase::Common:
+	{
+		if (IsWin())
+		{
+			game_phase = GamePhase::Win;
+			break;
+		}
+
+		for (const auto& cell_el : cells_container)
+		{
+			cell_el->ChangeFrameView(FrameType::Green);
+		}
+
+		PickChip();
+		
+		if (is_chip_picked)
+		{
+			game_phase = GamePhase::Picked;
+		}
 	}
-
-	if (!is_win_state)
+		break;
+	case GamePhase::Picked:
 	{
-		PickOrUnpickChip(delta_time);
-
 		if (current_chip != nullptr)
 		{
+			current_chip->Flicker(delta_time);
 			available_cells_array.clear();
 			available_cells_array = AvailableCellsArray(current_chip);
 			if (!available_cells_array.empty())
@@ -99,33 +117,65 @@ void GameMainState::update(const float delta_time)
 				{
 					cell_el->ChangeFrameView(FrameType::Yellow);
 				}
-				auto target_cell = GetCellUnderCursor(mouse_x, mouse_y);
+				target_cell = GetCellUnderCursor(mouse_x, mouse_y);
 				if (target_cell != nullptr)
 				{
 					if (IfCellIsInAvailibleArray(target_cell))
 					{
-						//MOVE STATE!!!
 						if (is_left_button_clicked)
 						{
-							current_chip->Move(target_cell->getX(), target_cell->getY());
-							UnpickChip();
+							delta_for_anim_X = current_chip->getX() - target_cell->getX();
+							delta_for_anim_Y = current_chip->getY() - target_cell->getY();
+
+							game_phase = GamePhase::Animation;
+							break;
 						}
-						
 					}
 				}
 			}
+			if (is_left_button_clicked)
+			{
+				UnpickChip();
+				game_phase = GamePhase::Common;
+			}
+		}
+	}
+		break;
+	case GamePhase::Animation:
+	{
+		current_chip->StopFlicker();
+
+		for (const auto& cell_el : cells_container)
+		{
+			cell_el->ChangeFrameView(FrameType::Green);
+		}
+
+		if (anim_timer < time_to_animation)
+		{
+			float stepX = (delta_time * delta_for_anim_X) / time_to_animation;
+			float stepY = (delta_time * delta_for_anim_Y) / time_to_animation;
+			float curX = current_chip->getX();
+			float curY = current_chip->getY();
+			current_chip->setObjectXY(curX - stepX, curY - stepY);
+			anim_timer += delta_time;
 		}
 		else
 		{
-			for (const auto& cell_el : cells_container) //change color to all cells on GREEN
-			{
-				cell_el->ChangeFrameView(FrameType::Green);
-			}
+			current_chip->setObjectXY(target_cell->getX(), target_cell->getY());
+			UnpickChip();
+			anim_timer = 0.f;
+			game_phase = GamePhase::Common;
 		}
-
-		if (IsWin())
-			is_win_state = 1;
 	}
+		break;
+	case GamePhase::Win:
+	{
+		is_win_state = true;
+	}
+		break;
+	}
+
+	is_left_button_clicked = false;
 }
 
 //RENDER STATE
@@ -133,64 +183,52 @@ void GameMainState::render(sf::RenderWindow& window)
 {
 	window.draw(game_menu_sprite);
 
-	for (const auto& el : cells_container)
-		window.draw(*el.get());
-
-	for (const auto& el : chips_container)
-		window.draw(*el.get());
-
 	for (const auto& el : vertical_wires_container)
 		window.draw(*el.get());
 
 	for (const auto& el : horisontal_wires_container)
 		window.draw(*el.get());
 
+	for (const auto& el : cells_container)
+		window.draw(*el.get());
+
+	for (const auto& el : chips_container)
+		window.draw(*el.get());
+
 	RenderWinPreviewMap(window);
 
 	if (is_win_state)
-	{
 		window.draw(*win_object.get());
-	}
 
 	window.draw(cursor);
 }
 
-void GameMainState::PickOrUnpickChip(const float delta_time)
+void GameMainState::PickChip()
 {
 	if (is_left_button_clicked)
 	{
-		if (is_chip_picked)
+		for (const auto& chip_el : chips_container)
 		{
-			//unpick state
-			UnpickChip();
-		}
-		else
-		{
-			//pick state
-			for (size_t i = 0; i < chips_container.size(); i++)
+			if (chip_el->IsContains(mouse_x, mouse_y))
 			{
-				if (chips_container[i]->IsContains(mouse_x, mouse_y))
-				{
-					current_chip = chips_container[i];
-					is_chip_picked = true;
-				}
+				current_chip = chip_el;
+				is_chip_picked = true;
+				is_left_button_clicked = false;
 			}
 		}
 	}
-	if (current_chip != nullptr)
-	{
-		current_chip->Flicker(delta_time);
-	}
-	is_left_button_clicked = false;
 }
 
 void GameMainState::UnpickChip()
 {
-	current_chip->StopFlicker();
-	current_chip = nullptr;
-	is_chip_picked = false;
+	if (is_chip_picked && current_chip != nullptr)
+	{
+		current_chip->StopFlicker();
+		current_chip = nullptr;
+		is_chip_picked = false;
+		is_left_button_clicked = false;
+	}
 }
-
 
 std::shared_ptr<Cell> GameMainState::GetCellUnderCursor(const float X, const float Y)
 {
@@ -341,10 +379,10 @@ void GameMainState::RenderWinPreviewMap(sf::RenderWindow& window)
 {
 	for (size_t i = 0; i < chips_container.size(); i++)
 	{
-		const float offsetX = 690;
-		const float offsetY = 730;
-		const float compression_ratio = 0.35f;
-		const sf::Vector2f scale(0.65f, 0.65f);
+		const float offsetX = 498;
+		const float offsetY = 670;
+		const float compression_ratio = 0.45f;
+		const sf::Vector2f scale(0.45f, 0.45f);
 		
 		sf::Sprite prev_sprite = chips_container[i]->GetSprite();
 		prev_sprite.setPosition(sf::Vector2f(

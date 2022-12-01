@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-static const std::string DEFAULT_WIN_PATH = "../GameManagerDev/data/GameState/win.png";
+static const std::string DEFAULT_WIN_PATH = "./data/GameState/win.png";
 
 class WinObject : public GameObject
 {

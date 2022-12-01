@@ -46,7 +46,7 @@ public:
 	GameSettings(const std::string& file_path);
 private:
 	void ReadInVector(std::ifstream& input_data);
-	void GameDataCreator();
+	bool GameDataCreator();
 	void PrintGameData();
 	bool CheckIsVectorPossibleValid();
 	void DivideWires();

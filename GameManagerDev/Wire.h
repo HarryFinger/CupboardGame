@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-static const std::string DEFAULT_WIRES_PATH = "../GameManagerDev/data/GameState/wires.png";
+static const std::string DEFAULT_WIRES_PATH = "./data/GameState/wires.png";
 
 enum class WireType
 {

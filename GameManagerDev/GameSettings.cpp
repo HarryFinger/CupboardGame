@@ -26,11 +26,17 @@ GameSettings::GameSettings(const std::string& file_path)
 #endif //GAME_DEBUG
 	}
 
-	GameDataCreator();
+	bool good_result = GameDataCreator();
 #ifdef GAME_DEBUG
+	if (!good_result)
+	{
+		throw "Impossible to create GameSettings, wrong data";
+	}
 	PrintGameData();
 #endif //GAME_DEBUG
+
 	DivideWires();
+
 	input_data.close();
 }
 
@@ -51,7 +57,7 @@ void GameSettings::ReadInVector(std::ifstream& input_data)
 	}
 }
 
-void GameSettings::GameDataCreator()
+bool GameSettings::GameDataCreator()
 {
 	size_t index = 0;
 	gamedata.locations_number = data_vector[index++];
@@ -86,12 +92,29 @@ void GameSettings::GameDataCreator()
 		index += 2;
 	}
 #ifdef GAME_DEBUG
-	if (data_vector.size() == index)
+	//aditional check
+	for (const auto& vec_el: gamedata.locations_coordinates)
 	{
-		std::cout << "GameData build success" << std::endl;
-		data_vector.clear();
+		if ((vec_el.x > 800) || (vec_el.x < 100) )
+		{
+			std::cout << "Impossible values of X inlo locations coordinates\n";
+			return 0;
+		}
+		if ((vec_el.y > 800) || (vec_el.y < 100))
+		{
+			std::cout << "Impossible values of Y inlo locations coordinates\n";
+			return 0;
+		}
 	}
 #endif //GAME_DEBUG
+	if (data_vector.size() == index)
+	{
+#ifdef GAME_DEBUG
+		std::cout << "GameData build success" << std::endl;
+#endif //GAME_DEBUG
+		data_vector.clear();
+	}
+	return 1;
 }
 
 void GameSettings::PrintGameData()
@@ -116,6 +139,7 @@ void GameSettings::PrintGameData()
 //simple basic check
 bool GameSettings::CheckIsVectorPossibleValid()
 {
+
 	uint32_t control_sum = data_vector[0] * 2 + data_vector[1] * 2 + data_vector[2] * 2 + 3;
 	return (control_sum == data_vector.size());
 }
