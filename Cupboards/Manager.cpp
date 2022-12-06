@@ -46,21 +46,7 @@ void Manager::SwitchStateIfNeed()
 void Manager::SwitchOnState(const StateTypeTask& task, const std::string& path)
 {
 	path_to_file = path;
-	switch (task)
-	{
-	case StateTypeTask::DO_NOTHING:
-		Manager::state_type_task = StateTypeTask::DO_NOTHING;
-		break;
-	case StateTypeTask::MAIN_MENU_STATE:
-		Manager::state_type_task = StateTypeTask::MAIN_MENU_STATE;
-		break;
-	case StateTypeTask::GAME_MAIN_STATE:
-		Manager::state_type_task = StateTypeTask::GAME_MAIN_STATE;
-		break;
-	case StateTypeTask::CLOSE_GAME_STATE:
-		Manager::state_type_task = StateTypeTask::CLOSE_GAME_STATE;
-		break;
-	}
+	state_type_task = task;
 }
 
 StateTypeTask Manager::state_type_task = StateTypeTask::DO_NOTHING;
