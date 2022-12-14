@@ -6,6 +6,7 @@ class IState
 {
 public:
 	IState() {};
+	virtual ~IState() {}
 
 	virtual void processInput(const sf::Event& event) = 0;
 	virtual void update(const float delta_time) = 0;
