@@ -1,9 +1,7 @@
 #include "Chip.h"
 
-#include <iostream>
-
-Chip::Chip(const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path) :
-	GameObject(rect, position, path)
+Chip::Chip(const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path) 
+	: GameObject(rect, position, path)
 {
 	SetTypeOnConstruct(rect);
 	original_color = sprite.getColor();
@@ -12,7 +10,7 @@ Chip::Chip(const sf::IntRect& rect, const sf::Vector2f& position, const std::str
 void Chip::Flicker(const float delta_time)
 {
 	time_accumulator += delta_time; //potential inf
-	sf::Uint8 opasity = (sin(time_accumulator * frequency) + 1)*90 + 65;
+	sf::Uint8 opasity = (sf::Uint8)(std::sin(time_accumulator * frequency) + 1)*90 + 65;
 
 	sprite.setColor(sf::Color(255, 255, 255, opasity));
 }
@@ -25,7 +23,6 @@ void Chip::StopFlicker()
 
 void Chip::update(const float delta_time)
 {
-
 }
 
 void Chip::SetTypeOnConstruct(const sf::IntRect& rect)

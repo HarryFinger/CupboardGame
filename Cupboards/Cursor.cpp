@@ -1,6 +1,9 @@
 #include "Cursor.h"
 
-const float CURSOR_SCALE = 0.27f;
+namespace
+{
+	constexpr float CURSOR_SCALE = 0.27f;
+}
 
 Cursor::Cursor(const std::string& path)
 {
@@ -35,7 +38,7 @@ void Cursor::update(const float delta_time)
 void Cursor::Flicker(const float delta_time)
 {
 	time_accumulator += delta_time; //potential inf
-	float opasity = (sin(time_accumulator * frequency) + 1) * scale_ratio + 0.9;
+	float opasity = (std::sin(time_accumulator * frequency) + 1.f) * scale_ratio + 0.9f;
 
-	sprite.setScale(original_scale.x*opasity, original_scale.y * opasity);
+	sprite.setScale(original_scale.x * opasity, original_scale.y * opasity);
 }

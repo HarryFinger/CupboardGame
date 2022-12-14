@@ -11,13 +11,14 @@ namespace
 	const char* PATH_TO_LEVEL_2 = "./data/GameState/CustomData2.txt";
 	const char* PATH_TO_LEVEL_3 = "./data/GameState/CustomData3.txt";
 
+	const char* PATH_TO_CURSOR_PIC = "./data/cursor.png";
 	const char* PATH_TO_MENU_PIC = "./data/MainMenu/menu.png";
 	const char* PATH_TO_BUTTONS_PIC = "./data/MainMenu/buttoms.png";
 
 }
 
 
-MainMenuState::MainMenuState() : cursor("./data/cursor.png")
+MainMenuState::MainMenuState() : cursor(PATH_TO_CURSOR_PIC)
 {
 	sf::Mouse mouse;
 	cursor.setPosition((sf::Vector2f)mouse.getPosition());

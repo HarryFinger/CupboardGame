@@ -33,14 +33,14 @@ private:
 
 public:
 	//GameData GetGameData() { return gamedata; }
-	uint32_t GetLocNumber() { return gamedata.locations_number; }
-	uint32_t GetChipsCount() { return gamedata.chips_count; }
-	uint32_t GetWiresNumber() { return gamedata.number_of_wires; }
-	std::vector<VectorInt> GetLocCoordVector() { return gamedata.locations_coordinates; }
-	std::vector<uint32_t> GetStartLocations() { return gamedata.chips_start_location; }
-	std::vector<uint32_t> GetWinLocations() { return gamedata.chips_win_location; }
-	std::vector<sf::Vector2f> GetVerticalWiresVector() { return gamedata.vertical_wires_coordinates; }
-	std::vector<sf::Vector2f> GetHorisontalWiresVector() { return gamedata.horisontal_wires_coordinates; }
+	uint32_t GetLocNumber() const { return gamedata.locations_number; }
+	uint32_t GetChipsCount() const { return gamedata.chips_count; }
+	uint32_t GetWiresNumber() const { return gamedata.number_of_wires; }
+	std::vector<VectorInt> GetLocCoordVector() const { return gamedata.locations_coordinates; }
+	std::vector<uint32_t> GetStartLocations() const { return gamedata.chips_start_location; }
+	std::vector<uint32_t> GetWinLocations() const { return gamedata.chips_win_location; }
+	std::vector<sf::Vector2f> GetVerticalWiresVector() const { return gamedata.vertical_wires_coordinates; }
+	std::vector<sf::Vector2f> GetHorisontalWiresVector() const { return gamedata.horisontal_wires_coordinates; }
 
 
 	GameSettings(const std::string& file_path);

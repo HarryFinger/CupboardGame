@@ -1,7 +1,9 @@
 #include "Cell.h"
 
-static const uint32_t MODULE = 100;
-
+namespace
+{
+	const uint32_t MODULE = 100;
+}
 
 Cell::Cell(const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path)
 	: GameObject(rect, position, path){}

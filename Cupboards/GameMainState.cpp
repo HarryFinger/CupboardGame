@@ -5,15 +5,18 @@ namespace
 {
 	constexpr float OFFSET = 50.f;
 	constexpr uint32_t MODULE = 100;
+
+	const char* PATH_TO_CURSOR_PIC = "./data/cursor.png";
+	const char* PATH_TO_FIELD_PIC = "./data/GameState/field.png";
 }
 
 
-GameMainState::GameMainState(const std::string& path): game_settings(path), cursor("./data/cursor.png")
+GameMainState::GameMainState(const std::string& path): game_settings(path), cursor(PATH_TO_CURSOR_PIC)
 {
 	sf::Mouse mouse;
 	cursor.setPosition({ (float)mouse.getPosition().x, (float)mouse.getPosition().y });
 
-	game_menu_texture.loadFromFile("./data/GameState/field.png");
+	game_menu_texture.loadFromFile(PATH_TO_FIELD_PIC);
 	game_menu_sprite.setTexture(game_menu_texture);
 	win_object = std::make_unique<WinObject>(sf::IntRect(0, 0, 800, 400), sf::Vector2f(500.f, 500.f));
 
@@ -185,17 +188,17 @@ void GameMainState::render(sf::RenderWindow& window)
 {
 	window.draw(game_menu_sprite);
 
-	for (const auto& el : vertical_wires_container)
-		window.draw(*el.get());
+	for (const auto& wire : vertical_wires_container)
+		window.draw(*wire.get());
 
-	for (const auto& el : horisontal_wires_container)
-		window.draw(*el.get());
+	for (const auto& wire : horisontal_wires_container)
+		window.draw(*wire.get());
 
-	for (const auto& el : cells_container)
-		window.draw(*el.get());
+	for (const auto& wire : cells_container)
+		window.draw(*wire.get());
 
-	for (const auto& el : chips_container)
-		window.draw(*el.get());
+	for (const auto& wire : chips_container)
+		window.draw(*wire.get());
 
 	RenderWinPreviewMap(window);
 
@@ -232,25 +235,25 @@ void GameMainState::UnpickChip()
 	}
 }
 
-std::shared_ptr<Cell> GameMainState::GetCellUnderCursor(const sf::Vector2f& vec) 
+std::shared_ptr<Cell> GameMainState::GetCellUnderCursor(const sf::Vector2f& vec) const
 {
-	for (const auto& el : cells_container)
+	for (const auto& cell : cells_container)
 	{
-		if (el.get()->IsContains(vec))
+		if (cell.get()->IsContains(vec))
 		{
-			return el;
+			return cell;
 		}
 	}
 	return nullptr;
 }
 
-std::shared_ptr<Chip> GameMainState::GetChipUnderCursor(const sf::Vector2f& vec)
+std::shared_ptr<Chip> GameMainState::GetChipUnderCursor(const sf::Vector2f& vec) const
 {
-	for (const auto& el : chips_container)
+	for (const auto& clip : chips_container)
 	{
-		if (el.get()->IsContains(vec))
+		if (clip.get()->IsContains(vec))
 		{
-			return el;
+			return clip;
 		}
 	}
 	return nullptr;
@@ -272,7 +275,7 @@ std::vector<std::shared_ptr<Cell>> GameMainState::AvailableCellsArray(const std:
 	return free_cell_array;
 }
 
-bool GameMainState::IfCellIsInAvailibleArray(const std::shared_ptr<Cell> sp_cell)
+bool GameMainState::IfCellIsInAvailibleArray(const std::shared_ptr<Cell> sp_cell) const
 {
 	float cellX = sp_cell->getPosition().x;
 	float cellY = sp_cell->getPosition().y;
@@ -360,7 +363,7 @@ bool GameMainState::WireIsNear(const std::shared_ptr<Chip> sp_chip, const std::s
 }
 
 
-bool GameMainState::IsWin()
+bool GameMainState::IsWin() const
 {
 	for (size_t i = 0; i < chips_container.size(); i++)
 	{

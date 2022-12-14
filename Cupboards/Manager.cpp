@@ -3,8 +3,7 @@
 
 Manager::Manager()
 {
-		current_state = std::make_unique<MainMenuState>();
-		//current_state = std::make_unique<GameMainState>();
+	current_state = std::make_unique<MainMenuState>();
 }
 
 void Manager::processInput(const sf::Event& event)
@@ -20,7 +19,9 @@ void Manager::update(const float delta_time)
 void Manager::render(sf::RenderWindow& window)
 {
 	if (Manager::state_type_task == StateTypeTask::CLOSE_GAME_STATE)
+	{
 		window.close();
+	}
 	current_state->render(window);
 }
 

@@ -5,8 +5,11 @@
 #include "Manager.h"
 #include "Cursor.h"
 
-const float FPS = 1.f / 60.f;
-const uint32_t WINDOW_SIZE = 1000;
+namespace
+{
+    constexpr float FPS = 1.f / 60.f;
+    constexpr uint32_t WINDOW_SIZE = 1000;
+}
 
 #ifdef GAME_DEBUG
 int main()
@@ -16,7 +19,7 @@ int main()
 int WinMain()
 #endif
 {
-    sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "ProjectX", sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "Cupboards Game", sf::Style::Titlebar | sf::Style::Close);
     window.setMouseCursorVisible(0);
     Manager manager;
 

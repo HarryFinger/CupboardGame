@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <iostream>
 
 class Cursor final : public sf::Drawable
 {
@@ -14,7 +13,6 @@ public:
 	sf::Vector2f getPosition() const { return sprite.getPosition(); }
 	void setPosition(const sf::Vector2f& position) { sprite.setPosition(position); }
 	
-
 private:
 	sf::Texture texture;
 	sf::Sprite sprite;

@@ -123,16 +123,27 @@ void GameSettings::PrintGameData()
 	std::cout << gamedata.chips_count << "\n";
 	std::cout << gamedata.number_of_wires << "\n";
 	for (const auto& it : gamedata.locations_coordinates)
+	{
 		std::cout << it.x << "," << it.y << " ";
+	}
 	std::cout << "\n";
+
 	for (const auto& it : gamedata.chips_start_location)
+	{
 		std::cout << it << " ";
+	}
 	std::cout << "\n";
+
 	for (const auto& it : gamedata.chips_win_location)
+	{
 		std::cout << it << " ";
+	}
 	std::cout << "\n";
+
 	for (const auto& it : gamedata.wires)
+	{
 		std::cout << it.x << "," << it.y << " ";
+	}
 	std::cout << "\n";
 }
 

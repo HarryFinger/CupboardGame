@@ -9,7 +9,7 @@ public:
 	GameObject(const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	void setPosition(const sf::Vector2f& vec);
-	bool IsContains(const sf::Vector2f& vec);
+	bool IsContains(const sf::Vector2f& vec) const;
 	sf::Sprite GetSprite() { return sprite;}
 	sf::Vector2f getPosition() const { return sprite.getPosition(); }
 	virtual ~GameObject() = 0;

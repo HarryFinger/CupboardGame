@@ -20,7 +20,7 @@ void GameObject::setPosition(const sf::Vector2f& vec)
 	sprite.setPosition(vec);
 }
 
-bool GameObject::IsContains(const sf::Vector2f& vec)
+bool GameObject::IsContains(const sf::Vector2f& vec) const
 {
 	return (sprite.getGlobalBounds().contains(vec));
 }
