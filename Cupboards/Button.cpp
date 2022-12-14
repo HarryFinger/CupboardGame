@@ -1,7 +1,7 @@
 #include "Button.h"
 
-Button::Button( const sf::IntRect& rect, const float X, const float Y, const std::string& path) :
-	GameObject(rect, X, Y, path)
+Button::Button( const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path)
+	: GameObject(rect, position, path)
 {
 	sprite.setScale(0.95f, 0.95f);
 	original_scale = sprite.getScale();

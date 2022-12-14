@@ -12,7 +12,7 @@ enum class FrameType
 class Cell final : public GameObject
 {
 public:
-	Cell(const sf::IntRect& rect, const float X, const float Y, const std::string& path = DEFAULT_CELLS_PATH);
+	Cell(const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path = DEFAULT_CELLS_PATH);
 	void ChangeFrameView(const FrameType& frame_type);
 private:
 	FrameType frame_type = FrameType::Green;

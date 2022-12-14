@@ -3,8 +3,8 @@
 static const uint32_t MODULE = 100;
 
 
-Cell::Cell(const sf::IntRect& rect, const float X, const float Y, const std::string& path) :
-	GameObject(rect, X, Y, path){}
+Cell::Cell(const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path)
+	: GameObject(rect, position, path){}
 
 void Cell::ChangeFrameView(const FrameType& frame_type)
 {

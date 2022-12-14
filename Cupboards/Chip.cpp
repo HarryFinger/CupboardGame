@@ -1,7 +1,9 @@
 #include "Chip.h"
+
 #include <iostream>
-Chip::Chip(const sf::IntRect& rect, const float X, const float Y, const std::string& path) :
-	GameObject(rect, X, Y, path)
+
+Chip::Chip(const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path) :
+	GameObject(rect, position, path)
 {
 	SetTypeOnConstruct(rect);
 	original_color = sprite.getColor();
@@ -20,12 +22,6 @@ void Chip::StopFlicker()
 	sprite.setColor(original_color);
 }
 
-void Chip::Move(const float X, const float Y)
-{
-	X_ = X; 
-	Y_ = Y;
-	sprite.setPosition(X_, Y_);
-}
 
 void Chip::update(const float delta_time)
 {

@@ -1,17 +1,21 @@
 ﻿#include "GameMainState.h"
 #include "Manager.h"
-static const float OFFSET = 50.f;
-static const uint32_t MODULE = 100;
+
+namespace
+{
+	constexpr float OFFSET = 50.f;
+	constexpr uint32_t MODULE = 100;
+}
+
 
 GameMainState::GameMainState(const std::string& path): game_settings(path), cursor("./data/cursor.png")
 {
 	sf::Mouse mouse;
-	mouse_x = static_cast<float>(mouse.getPosition().x);
-	mouse_y = static_cast<float>(mouse.getPosition().y);
+	cursor.setPosition({ (float)mouse.getPosition().x, (float)mouse.getPosition().y });
 
 	game_menu_texture.loadFromFile("./data/GameState/field.png");
 	game_menu_sprite.setTexture(game_menu_texture);
-	win_object = std::make_unique<WinObject>(sf::IntRect(0,0, 800, 400), 500.f, 500.f);
+	win_object = std::make_unique<WinObject>(sf::IntRect(0, 0, 800, 400), sf::Vector2f(500.f, 500.f));
 
 	//cells setup
 	for (size_t i = 0; i < game_settings.GetLocNumber(); i++)
@@ -19,16 +23,16 @@ GameMainState::GameMainState(const std::string& path): game_settings(path), curs
 		auto pair = game_settings.GetLocCoordVector()[i];
 		float X = static_cast<float>(pair.x + 50);
 		float Y = static_cast<float>(pair.y + 50);
-		cells_container.push_back(std::make_shared<Cell>(sf::IntRect(0, 0, MODULE, MODULE), X, Y));
+		cells_container.push_back(std::make_shared<Cell>(sf::IntRect(0, 0, MODULE, MODULE), sf::Vector2f(X, Y)));
 	}
 
 	//chips setup
 	for (size_t i = 0; i < game_settings.GetChipsCount(); i++)
 	{
 		size_t index = game_settings.GetStartLocations()[i] - 1;
-		float X = cells_container[index]->getX();
-		float Y = cells_container[index]->getY();
-		chips_container.push_back(std::make_shared<Chip>(sf::IntRect(MODULE * static_cast<uint32_t>(i), 0, MODULE, MODULE), X, Y));
+		float X = cells_container[index]->getPosition().x;
+		float Y = cells_container[index]->getPosition().y;
+		chips_container.push_back(std::make_shared<Chip>(sf::IntRect(MODULE * static_cast<uint32_t>(i), 0, MODULE, MODULE), sf::Vector2f(X, Y)));
 	}	
 
 	//wires setup
@@ -36,21 +40,21 @@ GameMainState::GameMainState(const std::string& path): game_settings(path), curs
 	{
 		float X = game_settings.GetVerticalWiresVector()[i].x + OFFSET;
 		float Y = game_settings.GetVerticalWiresVector()[i].y + OFFSET;
-		vertical_wires_container.push_back(std::make_shared<Wire>(sf::IntRect(MODULE, 0, MODULE, MODULE), X, Y));
+		vertical_wires_container.push_back(std::make_shared<Wire>(sf::IntRect(MODULE, 0, MODULE, MODULE), sf::Vector2f(X, Y)));
 	}
 	for (size_t i = 0; i < game_settings.GetHorisontalWiresVector().size(); i++)
 	{
 		float X = game_settings.GetHorisontalWiresVector()[i].x + OFFSET;
 		float Y = game_settings.GetHorisontalWiresVector()[i].y + OFFSET;
-		horisontal_wires_container.push_back(std::make_shared<Wire>(sf::IntRect(0, 0, MODULE, MODULE), X, Y));
+		horisontal_wires_container.push_back(std::make_shared<Wire>(sf::IntRect(0, 0, MODULE, MODULE), sf::Vector2f(X, Y)));
 	}
 
 	//win condition setup
 	for (size_t i = 0; i < game_settings.GetChipsCount(); i++)
 	{
 		size_t index = game_settings.GetWinLocations()[i] - 1;
-		float X = cells_container[index]->getX();
-		float Y = cells_container[index]->getY();
+		float X = cells_container[index]->getPosition().x;
+		float Y = cells_container[index]->getPosition().y;
 		win_condition_container.push_back(sf::Vector2f(X, Y));
 	}
 }
@@ -70,15 +74,13 @@ void GameMainState::processInput(const sf::Event& event)
 
 	if (event.type == sf::Event::MouseMoved)
 	{
-		mouse_x = static_cast<float>(event.mouseMove.x);
-		mouse_y = static_cast<float>(event.mouseMove.y);
+		cursor.setPosition({ (float)event.mouseMove.x, (float)event.mouseMove.y });
 	}
 }
 
 //UPDATE STATE
 void GameMainState::update(const float delta_time)
 {
-	cursor.setMouseXY(mouse_x, mouse_y); //cursor movement
 	cursor.update(delta_time);
 
 	switch (game_phase)
@@ -91,9 +93,9 @@ void GameMainState::update(const float delta_time)
 			break;
 		}
 
-		for (const auto& cell_el : cells_container)
+		for (const auto& cell : cells_container)
 		{
-			cell_el->ChangeFrameView(FrameType::Green);
+			cell->ChangeFrameView(FrameType::Green);
 		}
 
 		PickChip();
@@ -113,19 +115,19 @@ void GameMainState::update(const float delta_time)
 			available_cells_array = AvailableCellsArray(current_chip);
 			if (!available_cells_array.empty())
 			{
-				for (const auto& cell_el : available_cells_array)
+				for (const auto& cell : available_cells_array)
 				{
-					cell_el->ChangeFrameView(FrameType::Yellow);
+					cell->ChangeFrameView(FrameType::Yellow);
 				}
-				target_cell = GetCellUnderCursor(mouse_x, mouse_y);
+				target_cell = GetCellUnderCursor(cursor.getPosition());
 				if (target_cell != nullptr)
 				{
 					if (IfCellIsInAvailibleArray(target_cell))
 					{
 						if (is_left_button_clicked)
 						{
-							delta_for_anim_X = current_chip->getX() - target_cell->getX();
-							delta_for_anim_Y = current_chip->getY() - target_cell->getY();
+							delta_for_anim_X = current_chip->getPosition().x - target_cell->getPosition().x;
+							delta_for_anim_Y = current_chip->getPosition().y - target_cell->getPosition().y;
 
 							game_phase = GamePhase::Animation;
 							break;
@@ -145,23 +147,23 @@ void GameMainState::update(const float delta_time)
 	{
 		current_chip->StopFlicker();
 
-		for (const auto& cell_el : cells_container)
+		for (const auto& cell : cells_container)
 		{
-			cell_el->ChangeFrameView(FrameType::Green);
+			cell->ChangeFrameView(FrameType::Green);
 		}
 
 		if (anim_timer < time_to_animation)
 		{
 			float stepX = (delta_time * delta_for_anim_X) / time_to_animation;
 			float stepY = (delta_time * delta_for_anim_Y) / time_to_animation;
-			float curX = current_chip->getX();
-			float curY = current_chip->getY();
-			current_chip->setObjectXY(curX - stepX, curY - stepY);
+			float curX = current_chip->getPosition().x;
+			float curY = current_chip->getPosition().y;
+			current_chip->setPosition({ curX - stepX, curY - stepY });
 			anim_timer += delta_time;
 		}
 		else
 		{
-			current_chip->setObjectXY(target_cell->getX(), target_cell->getY());
+			current_chip->setPosition(target_cell->getPosition());
 			UnpickChip();
 			anim_timer = 0.f;
 			game_phase = GamePhase::Common;
@@ -207,11 +209,11 @@ void GameMainState::PickChip()
 {
 	if (is_left_button_clicked)
 	{
-		for (const auto& chip_el : chips_container)
+		for (const auto& chip : chips_container)
 		{
-			if (chip_el->IsContains(mouse_x, mouse_y))
+			if (chip->IsContains(cursor.getPosition()))
 			{
-				current_chip = chip_el;
+				current_chip = chip;
 				is_chip_picked = true;
 				is_left_button_clicked = false;
 			}
@@ -230,11 +232,11 @@ void GameMainState::UnpickChip()
 	}
 }
 
-std::shared_ptr<Cell> GameMainState::GetCellUnderCursor(const float X, const float Y)
+std::shared_ptr<Cell> GameMainState::GetCellUnderCursor(const sf::Vector2f& vec) 
 {
 	for (const auto& el : cells_container)
 	{
-		if (el.get()->IsContains(X, Y)) 
+		if (el.get()->IsContains(vec))
 		{
 			return el;
 		}
@@ -242,11 +244,11 @@ std::shared_ptr<Cell> GameMainState::GetCellUnderCursor(const float X, const flo
 	return nullptr;
 }
 
-std::shared_ptr<Chip> GameMainState::GetChipUnderCursor(const float X, const float Y)
+std::shared_ptr<Chip> GameMainState::GetChipUnderCursor(const sf::Vector2f& vec)
 {
 	for (const auto& el : chips_container)
 	{
-		if (el.get()->IsContains(X, Y))
+		if (el.get()->IsContains(vec))
 		{
 			return el;
 		}
@@ -257,13 +259,13 @@ std::shared_ptr<Chip> GameMainState::GetChipUnderCursor(const float X, const flo
 std::vector<std::shared_ptr<Cell>> GameMainState::AvailableCellsArray(const std::shared_ptr<Chip> sp_chip)
 {
 	std::vector<std::shared_ptr<Cell>> free_cell_array;
-	for (const auto& cell_el : cells_container)
+	for (const auto& cell : cells_container)
 	{
-		if (CellIsEmpty(cell_el))
+		if (CellIsEmpty(cell))
 		{
-			if (IsWireBetween(sp_chip, cell_el))
+			if (IsWireBetween(sp_chip, cell))
 			{
-				free_cell_array.push_back(cell_el);
+				free_cell_array.push_back(cell);
 			}
 		}
 	}
@@ -272,11 +274,11 @@ std::vector<std::shared_ptr<Cell>> GameMainState::AvailableCellsArray(const std:
 
 bool GameMainState::IfCellIsInAvailibleArray(const std::shared_ptr<Cell> sp_cell)
 {
-	float cellX = sp_cell->getX();
-	float cellY = sp_cell->getY();
-	for (const auto& cell_el : available_cells_array)
+	float cellX = sp_cell->getPosition().x;
+	float cellY = sp_cell->getPosition().y;
+	for (const auto& cell : available_cells_array)
 	{
-		if (cell_el->IsContains(cellX, cellY))
+		if (cell->IsContains({ cellX, cellY }))
 		{
 			return true;
 		}
@@ -287,9 +289,9 @@ bool GameMainState::IfCellIsInAvailibleArray(const std::shared_ptr<Cell> sp_cell
 bool GameMainState::CellIsEmpty(const std::shared_ptr<Cell> cell) const
 {
 	bool is_empty = 0;
-	for (const auto& chip_el : chips_container)
+	for (const auto& chip : chips_container)
 	{
-		if (cell->IsContains(chip_el->getX(), chip_el->getY()))
+		if (cell->IsContains(chip->getPosition()))
 		{
 			is_empty = 0;
 			return is_empty;
@@ -304,24 +306,24 @@ bool GameMainState::CellIsEmpty(const std::shared_ptr<Cell> cell) const
 
 bool GameMainState::IsWireBetween(const std::shared_ptr<Chip> sp_chip, const std::shared_ptr<Cell> sp_cell) const
 {
-	float chipX = sp_chip->getX();
-	float chipY = sp_chip->getY();
-	float cellX = sp_cell->getX();
-	float cellY = sp_cell->getY();
+	float chipX = sp_chip->getPosition().x;
+	float chipY = sp_chip->getPosition().y;
+	float cellX = sp_cell->getPosition().x;
+	float cellY = sp_cell->getPosition().y;
 
 	float resultX = (chipX + cellX) / 2;
 	float resultY = (chipY + cellY) / 2;
 
-	for (const auto& wire_el : vertical_wires_container)
+	for (const auto& wire : vertical_wires_container)
 	{
-		if (wire_el->IsContains(resultX, resultY) && WireIsNear(sp_chip, wire_el))
+		if (wire->IsContains({ resultX, resultY }) && WireIsNear(sp_chip, wire))
 		{
 			return true;
 		}
 	}
-	for (const auto& wire_el : horisontal_wires_container)
+	for (const auto& wire : horisontal_wires_container)
 	{
-		if (wire_el->IsContains(resultX, resultY) && WireIsNear(sp_chip, wire_el))
+		if (wire->IsContains({ resultX, resultY }) && WireIsNear(sp_chip, wire))
 		{
 			return true;
 		}
@@ -332,8 +334,8 @@ bool GameMainState::IsWireBetween(const std::shared_ptr<Chip> sp_chip, const std
 //TO DO!!!!!!!!!!!!!!!!!!!!!!!!
 bool GameMainState::WireIsNear(const std::shared_ptr<Chip> sp_chip, const std::shared_ptr<Wire> sp_wire) const
 {
-	float chipX = sp_chip->getX();
-	float chipY = sp_chip->getY();
+	float chipX = sp_chip->getPosition().x;
+	float chipY = sp_chip->getPosition().y;
 
 	float option1X = chipX - MODULE;
 	float option1Y = chipY;
@@ -345,13 +347,13 @@ bool GameMainState::WireIsNear(const std::shared_ptr<Chip> sp_chip, const std::s
 	float option4X = chipX;
 	float option4Y = chipY + MODULE;
 
-	if (sp_wire->IsContains(option1X, option1Y))
+	if (sp_wire->IsContains({ option1X, option1Y }))
 		return true;
-	if (sp_wire->IsContains(option2X, option2Y))
+	if (sp_wire->IsContains({ option2X, option2Y }))
 		return true;
-	if (sp_wire->IsContains(option3X, option3Y))
+	if (sp_wire->IsContains({ option3X, option3Y }))
 		return true;
-	if (sp_wire->IsContains(option4X, option4Y))
+	if (sp_wire->IsContains({ option4X, option4Y }))
 		return true;
 
 	return false;
@@ -362,8 +364,8 @@ bool GameMainState::IsWin()
 {
 	for (size_t i = 0; i < chips_container.size(); i++)
 	{
-		if ((chips_container[i]->getX() == win_condition_container[i].x) && 
-			((chips_container[i]->getY() == win_condition_container[i].y)))
+		if ((chips_container[i]->getPosition().x == win_condition_container[i].x) &&
+			((chips_container[i]->getPosition().y == win_condition_container[i].y)))
 		{
 			continue;
 		}

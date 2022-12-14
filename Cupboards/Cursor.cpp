@@ -15,16 +15,7 @@ Cursor::Cursor(const std::string& path)
 	original_scale = sprite.getScale();
 }
 
-void Cursor::setMouseXY(float x, float y)
-{
-	mouse_x = x;
-	mouse_y = y;
-
-	//update sprite position
-	sprite.setPosition(x, y);
-}
-
-sf::Sprite Cursor::getCursorSprite()
+sf::Sprite Cursor::getCursorSprite() const
 {
 	return sprite;
 }

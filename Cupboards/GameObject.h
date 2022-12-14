@@ -6,20 +6,16 @@
 class GameObject : public sf::Drawable
 {
 public:
-	GameObject(const sf::IntRect& rect,
-			const float X, const float Y, const std::string& path);
+	GameObject(const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-	void setObjectXY(const float X, const float Y);
-	bool IsContains(float X, float Y);
+	void setPosition(const sf::Vector2f& vec);
+	bool IsContains(const sf::Vector2f& vec);
 	sf::Sprite GetSprite() { return sprite;}
-	float getX() { return X_; }
-	float getY() { return Y_; }
+	sf::Vector2f getPosition() const { return sprite.getPosition(); }
 	virtual ~GameObject() = 0;
 	
 protected:
 	sf::Texture texture;
 	sf::Sprite sprite;
-	float X_;
-	float Y_;
 };
 

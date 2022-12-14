@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <SFML/Graphics.hpp>
-#include <iostream>
 
 #include "IState.h"
 #include "GameMainState.h"

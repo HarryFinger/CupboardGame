@@ -93,14 +93,14 @@ bool GameSettings::GameDataCreator()
 	}
 #ifdef GAME_DEBUG
 	//aditional check
-	for (const auto& vec_el: gamedata.locations_coordinates)
+	for (const auto& vec: gamedata.locations_coordinates)
 	{
-		if ((vec_el.x > 800) || (vec_el.x < 100) )
+		if ((vec.x > 800) || (vec.x < 100) )
 		{
 			std::cout << "Impossible values of X inlo locations coordinates\n";
 			return 0;
 		}
-		if ((vec_el.y > 800) || (vec_el.y < 100))
+		if ((vec.y > 800) || (vec.y < 100))
 		{
 			std::cout << "Impossible values of Y inlo locations coordinates\n";
 			return 0;

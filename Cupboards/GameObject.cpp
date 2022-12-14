@@ -1,14 +1,13 @@
 #include "GameObject.h"
 
-GameObject::GameObject(const sf::IntRect& rect,
-				const float X, const float Y, const std::string& path): X_(X), Y_(Y)
+GameObject::GameObject(const sf::IntRect& rect,const sf::Vector2f& position, const std::string& path)
 {
+	sprite.setPosition(position);
 	texture.loadFromFile(path);
 	texture.setSmooth(true);
 	sprite.setTexture(texture);
 	sprite.setTextureRect(rect);
 	sprite.setOrigin(static_cast<float>(rect.width / 2), static_cast<float>(rect.height / 2));
-	sprite.setPosition(X,Y);
 }
 
 void GameObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -16,16 +15,14 @@ void GameObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(sprite);
 }
 
-void GameObject::setObjectXY(const float X, const float Y)
+void GameObject::setPosition(const sf::Vector2f& vec)
 {
-	X_ = X;
-	Y_ = Y;
-	sprite.setPosition(X_, Y_);
+	sprite.setPosition(vec);
 }
 
-bool GameObject::IsContains(float X, float Y)
+bool GameObject::IsContains(const sf::Vector2f& vec)
 {
-	return (sprite.getGlobalBounds().contains(X, Y));
+	return (sprite.getGlobalBounds().contains(vec));
 }
 
 GameObject::~GameObject() {}

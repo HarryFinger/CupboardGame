@@ -1,6 +1,6 @@
 #include "Wire.h"
-Wire::Wire(const sf::IntRect& rect, const float X, const float Y, const std::string& path) :
-	GameObject( rect, X, Y, path)
+Wire::Wire(const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path) :
+	GameObject( rect, position, path)
 {
 	SetTypeOnConstruct(rect);
 }

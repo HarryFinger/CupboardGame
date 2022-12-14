@@ -19,10 +19,9 @@ enum class ChipType
 class Chip final : public GameObject
 {
 public:
-	Chip(const sf::IntRect& rect, const float X, const float Y, const std::string& path = DEFAULT_CHIP_PATH);
-	void Flicker(const float delta_time);
+	Chip(const sf::IntRect& rect, const sf::Vector2f& position, const std::string& path = DEFAULT_CHIP_PATH);
+	void Flicker(float delta_time);
 	void StopFlicker();
-	void Move(const float X, const float Y);
 	void update(const float delta_time);
 private:
 	void SetTypeOnConstruct(const sf::IntRect& rect);
