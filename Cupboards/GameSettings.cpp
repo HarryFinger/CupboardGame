@@ -117,7 +117,7 @@ bool GameSettings::GameDataCreator()
 	return 1;
 }
 
-void GameSettings::PrintGameData()
+void GameSettings::PrintGameData() const
 {
 	std::cout << gamedata.locations_number << "\n";
 	std::cout << gamedata.chips_count << "\n";
@@ -148,7 +148,7 @@ void GameSettings::PrintGameData()
 }
 
 //simple basic check
-bool GameSettings::CheckIsVectorPossibleValid()
+bool GameSettings::CheckIsVectorPossibleValid() const
 {
 
 	uint32_t control_sum = data_vector[0] * 2 + data_vector[1] * 2 + data_vector[2] * 2 + 3;

@@ -26,7 +26,7 @@ GameMainState::GameMainState(const std::string& path): game_settings(path), curs
 		auto pair = game_settings.GetLocCoordVector()[i];
 		float X = static_cast<float>(pair.x + 50);
 		float Y = static_cast<float>(pair.y + 50);
-		cells_container.push_back(std::make_shared<Cell>(sf::IntRect(0, 0, MODULE, MODULE), sf::Vector2f(X, Y)));
+		cells_container.push_back(std::make_unique<Cell>(sf::IntRect(0, 0, MODULE, MODULE), sf::Vector2f(X, Y)));
 	}
 
 	//chips setup
@@ -35,7 +35,7 @@ GameMainState::GameMainState(const std::string& path): game_settings(path), curs
 		size_t index = game_settings.GetStartLocations()[i] - 1;
 		float X = cells_container[index]->getPosition().x;
 		float Y = cells_container[index]->getPosition().y;
-		chips_container.push_back(std::make_shared<Chip>(sf::IntRect(MODULE * static_cast<uint32_t>(i), 0, MODULE, MODULE), sf::Vector2f(X, Y)));
+		chips_container.push_back(std::make_unique<Chip>(sf::IntRect(MODULE * static_cast<uint32_t>(i), 0, MODULE, MODULE), sf::Vector2f(X, Y)));
 	}	
 
 	//wires setup
@@ -43,13 +43,13 @@ GameMainState::GameMainState(const std::string& path): game_settings(path), curs
 	{
 		float X = game_settings.GetVerticalWiresVector()[i].x + OFFSET;
 		float Y = game_settings.GetVerticalWiresVector()[i].y + OFFSET;
-		vertical_wires_container.push_back(std::make_shared<Wire>(sf::IntRect(MODULE, 0, MODULE, MODULE), sf::Vector2f(X, Y)));
+		vertical_wires_container.push_back(std::make_unique<Wire>(sf::IntRect(MODULE, 0, MODULE, MODULE), sf::Vector2f(X, Y)));
 	}
 	for (size_t i = 0; i < game_settings.GetHorisontalWiresVector().size(); i++)
 	{
 		float X = game_settings.GetHorisontalWiresVector()[i].x + OFFSET;
 		float Y = game_settings.GetHorisontalWiresVector()[i].y + OFFSET;
-		horisontal_wires_container.push_back(std::make_shared<Wire>(sf::IntRect(0, 0, MODULE, MODULE), sf::Vector2f(X, Y)));
+		horisontal_wires_container.push_back(std::make_unique<Wire>(sf::IntRect(0, 0, MODULE, MODULE), sf::Vector2f(X, Y)));
 	}
 
 	//win condition setup
@@ -89,94 +89,96 @@ void GameMainState::update(const float delta_time)
 	switch (game_phase)
 	{
 	case GamePhase::Common:
-	{
-		if (IsWin())
 		{
-			game_phase = GamePhase::Win;
-			break;
-		}
+			if (IsWin())
+			{
+				game_phase = GamePhase::Win;
+				break;
+			}
 
-		for (const auto& cell : cells_container)
-		{
-			cell->ChangeFrameView(FrameType::Green);
-		}
+			for (const auto& cell : cells_container)
+			{
+				cell->ChangeFrameView(FrameType::Green);
+			}
 
-		PickChip();
+			PickChip();
 		
-		if (is_chip_picked)
-		{
-			game_phase = GamePhase::Picked;
+			if (is_chip_picked)
+			{
+				game_phase = GamePhase::Picked;
+			}
 		}
-	}
 		break;
 	case GamePhase::Picked:
-	{
-		if (current_chip != nullptr)
 		{
-			current_chip->Flicker(delta_time);
-			available_cells_array.clear();
-			available_cells_array = AvailableCellsArray(current_chip);
-			if (!available_cells_array.empty())
+			if (current_chip != nullptr)
 			{
-				for (const auto& cell : available_cells_array)
+				current_chip->Flicker(delta_time);
+				available_cells_array.clear();
+				available_cells_array = AvailableCellsArray(current_chip);
+				if (!available_cells_array.empty())
 				{
-					cell->ChangeFrameView(FrameType::Yellow);
-				}
-				target_cell = GetCellUnderCursor(cursor.getPosition());
-				if (target_cell != nullptr)
-				{
-					if (IfCellIsInAvailibleArray(target_cell))
+					for (const auto& cell : available_cells_array)
 					{
-						if (is_left_button_clicked)
+						cell->ChangeFrameView(FrameType::Yellow);
+					}
+					target_cell = GetCellUnderCursor(cursor.getPosition());
+					if (target_cell != nullptr)
+					{
+						if (IfCellIsInAvailibleArray(target_cell))
 						{
-							delta_for_anim_X = current_chip->getPosition().x - target_cell->getPosition().x;
-							delta_for_anim_Y = current_chip->getPosition().y - target_cell->getPosition().y;
+							if (is_left_button_clicked)
+							{
+								delta_for_anim_X = current_chip->getPosition().x - target_cell->getPosition().x;
+								delta_for_anim_Y = current_chip->getPosition().y - target_cell->getPosition().y;
 
-							game_phase = GamePhase::Animation;
-							break;
+								game_phase = GamePhase::Animation;
+								break;
+							}
 						}
 					}
 				}
+				if (is_left_button_clicked)
+				{
+					UnpickChip();
+					game_phase = GamePhase::Common;
+				}
 			}
-			if (is_left_button_clicked)
+		}
+		break;
+	case GamePhase::Animation:
+		{
+			current_chip->StopFlicker();
+
+			for (const auto& cell : cells_container)
 			{
+				cell->ChangeFrameView(FrameType::Green);
+			}
+
+			if (anim_timer < time_to_animation)
+			{
+				float stepX = (delta_time * delta_for_anim_X) / time_to_animation;
+				float stepY = (delta_time * delta_for_anim_Y) / time_to_animation;
+				float curX = current_chip->getPosition().x;
+				float curY = current_chip->getPosition().y;
+				current_chip->setPosition({ curX - stepX, curY - stepY });
+				anim_timer += delta_time;
+			}
+			else
+			{
+				current_chip->setPosition(target_cell->getPosition());
 				UnpickChip();
+				anim_timer = 0.f;
 				game_phase = GamePhase::Common;
 			}
 		}
-	}
-		break;
-	case GamePhase::Animation:
-	{
-		current_chip->StopFlicker();
-
-		for (const auto& cell : cells_container)
-		{
-			cell->ChangeFrameView(FrameType::Green);
-		}
-
-		if (anim_timer < time_to_animation)
-		{
-			float stepX = (delta_time * delta_for_anim_X) / time_to_animation;
-			float stepY = (delta_time * delta_for_anim_Y) / time_to_animation;
-			float curX = current_chip->getPosition().x;
-			float curY = current_chip->getPosition().y;
-			current_chip->setPosition({ curX - stepX, curY - stepY });
-			anim_timer += delta_time;
-		}
-		else
-		{
-			current_chip->setPosition(target_cell->getPosition());
-			UnpickChip();
-			anim_timer = 0.f;
-			game_phase = GamePhase::Common;
-		}
-	}
 		break;
 	case GamePhase::Win:
-	{
-		is_win_state = true;
-	}
+		{
+			is_win_state = true;
+		}
+		break;
+	default:
 		break;
 	}
 
@@ -216,7 +218,7 @@ void GameMainState::PickChip()
 		{
 			if (chip->IsContains(cursor.getPosition()))
 			{
-				current_chip = chip;
+				current_chip = chip.get();
 				is_chip_picked = true;
 				is_left_button_clicked = false;
 			}
@@ -235,47 +237,47 @@ void GameMainState::UnpickChip()
 	}
 }
 
-std::shared_ptr<Cell> GameMainState::GetCellUnderCursor(const sf::Vector2f& vec) const
+Cell* GameMainState::GetCellUnderCursor(const sf::Vector2f& vec) const
 {
 	for (const auto& cell : cells_container)
 	{
 		if (cell.get()->IsContains(vec))
 		{
-			return cell;
+			return cell.get();
 		}
 	}
 	return nullptr;
 }
 
-std::shared_ptr<Chip> GameMainState::GetChipUnderCursor(const sf::Vector2f& vec) const
+Chip* GameMainState::GetChipUnderCursor(const sf::Vector2f& vec) const
 {
 	for (const auto& clip : chips_container)
 	{
 		if (clip.get()->IsContains(vec))
 		{
-			return clip;
+			return clip.get();
 		}
 	}
 	return nullptr;
 }
 
-std::vector<std::shared_ptr<Cell>> GameMainState::AvailableCellsArray(const std::shared_ptr<Chip> sp_chip)
+std::vector<Cell*> GameMainState::AvailableCellsArray(Chip* sp_chip)
 {
-	std::vector<std::shared_ptr<Cell>> free_cell_array;
+	std::vector<Cell*> free_cell_array;
 	for (const auto& cell : cells_container)
 	{
-		if (CellIsEmpty(cell))
+		if (CellIsEmpty(cell.get()))
 		{
-			if (IsWireBetween(sp_chip, cell))
+			if (IsWireBetween(sp_chip, cell.get()))
 			{
-				free_cell_array.push_back(cell);
+				free_cell_array.push_back(cell.get());
 			}
 		}
 	}
 	return free_cell_array;
 }
 
-bool GameMainState::IfCellIsInAvailibleArray(const std::shared_ptr<Cell> sp_cell) const
+bool GameMainState::IfCellIsInAvailibleArray(Cell* sp_cell) const
 {
 	float cellX = sp_cell->getPosition().x;
 	float cellY = sp_cell->getPosition().y;
@@ -289,7 +291,7 @@ bool GameMainState::IfCellIsInAvailibleArray(const std::shared_ptr<Cell> sp_cell
 	return false;
 }
 
-bool GameMainState::CellIsEmpty(const std::shared_ptr<Cell> cell) const
+bool GameMainState::CellIsEmpty(Cell* cell) const
 {
 	bool is_empty = 0;
 	for (const auto& chip : chips_container)
@@ -307,7 +309,7 @@ bool GameMainState::CellIsEmpty(const std::shared_ptr<Cell> cell) const
 	return is_empty;
 }
 
-bool GameMainState::IsWireBetween(const std::shared_ptr<Chip> sp_chip, const std::shared_ptr<Cell> sp_cell) const
+bool GameMainState::IsWireBetween(Chip* sp_chip, Cell* sp_cell) const
 {
 	float chipX = sp_chip->getPosition().x;
 	float chipY = sp_chip->getPosition().y;
@@ -319,14 +321,14 @@ bool GameMainState::IsWireBetween(const std::shared_ptr<Chip> sp_chip, const std
 
 	for (const auto& wire : vertical_wires_container)
 	{
-		if (wire->IsContains({ resultX, resultY }) && WireIsNear(sp_chip, wire))
+		if (wire->IsContains({ resultX, resultY }) && WireIsNear(sp_chip, wire.get()))
 		{
 			return true;
 		}
 	}
 	for (const auto& wire : horisontal_wires_container)
 	{
-		if (wire->IsContains({ resultX, resultY }) && WireIsNear(sp_chip, wire))
+		if (wire->IsContains({ resultX, resultY }) && WireIsNear(sp_chip, wire.get()))
 		{
 			return true;
 		}
@@ -335,7 +337,7 @@ bool GameMainState::IsWireBetween(const std::shared_ptr<Chip> sp_chip, const std
 }
 
 //TO DO!!!!!!!!!!!!!!!!!!!!!!!!
-bool GameMainState::WireIsNear(const std::shared_ptr<Chip> sp_chip, const std::shared_ptr<Wire> sp_wire) const
+bool GameMainState::WireIsNear(Chip* sp_chip, Wire* sp_wire) const
 {
 	float chipX = sp_chip->getPosition().x;
 	float chipY = sp_chip->getPosition().y;
@@ -352,10 +354,13 @@ bool GameMainState::WireIsNear(const std::shared_ptr<Chip> sp_chip, const std::s
 
 	if (sp_wire->IsContains({ option1X, option1Y }))
 		return true;
+
 	if (sp_wire->IsContains({ option2X, option2Y }))
 		return true;
+
 	if (sp_wire->IsContains({ option3X, option3Y }))
 		return true;
+
 	if (sp_wire->IsContains({ option4X, option4Y }))
 		return true;
 
@@ -390,8 +395,7 @@ void GameMainState::RenderWinPreviewMap(sf::RenderWindow& window)
 		const sf::Vector2f scale(0.45f, 0.45f);
 		
 		sf::Sprite prev_sprite = chips_container[i]->GetSprite();
-		prev_sprite.setPosition(sf::Vector2f(
-			win_condition_container[i].x * compression_ratio + offsetX , win_condition_container[i].y * compression_ratio + offsetY));
+		prev_sprite.setPosition(sf::Vector2f(win_condition_container[i].x * compression_ratio + offsetX , win_condition_container[i].y * compression_ratio + offsetY));
 		prev_sprite.setScale(scale);
 		window.draw(prev_sprite);
 	}

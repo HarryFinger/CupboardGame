@@ -24,14 +24,14 @@ private:
 	void PickChip();
 	void UnpickChip();
 
-	std::shared_ptr<Cell> GetCellUnderCursor (const sf::Vector2f& vec) const;
-	std::shared_ptr<Chip> GetChipUnderCursor (const sf::Vector2f& vec) const;
+	Cell* GetCellUnderCursor (const sf::Vector2f& vec) const;
+	Chip* GetChipUnderCursor (const sf::Vector2f& vec) const;
 	
-	std::vector<std::shared_ptr<Cell>> AvailableCellsArray(const std::shared_ptr<Chip> sp_chip);
-	bool CellIsEmpty(const std::shared_ptr<Cell> cell) const;
-	bool IsWireBetween(const std::shared_ptr<Chip> sp_chip, const std::shared_ptr<Cell> sp_cell) const;
-	bool WireIsNear(const std::shared_ptr<Chip> sp_chip, const std::shared_ptr<Wire> sp_wire) const;
-	bool IfCellIsInAvailibleArray(const std::shared_ptr<Cell> sp_cell) const;
+	std::vector<Cell*> AvailableCellsArray(Chip* sp_chip);
+	bool CellIsEmpty(Cell* cell) const;
+	bool IsWireBetween(Chip* sp_chip, Cell* sp_cell) const;
+	bool WireIsNear(Chip* sp_chip, Wire* sp_wire) const;
+	bool IfCellIsInAvailibleArray(Cell* sp_cell) const;
 	bool IsWin() const;
 
 	//render
@@ -46,15 +46,16 @@ private:
 		Win
 	} game_phase = GamePhase::Common;
 
-	std::vector<std::shared_ptr<Chip>> chips_container;
-	std::vector<std::shared_ptr<Wire>> vertical_wires_container;
-	std::vector<std::shared_ptr<Wire>> horisontal_wires_container;
-	std::vector<std::shared_ptr<Cell>> cells_container;
-	std::vector<std::shared_ptr<Cell>> available_cells_array; //container with available locations to move
+	std::vector<std::unique_ptr<Chip>> chips_container;
+	std::vector<std::unique_ptr<Wire>> vertical_wires_container;
+	std::vector<std::unique_ptr<Wire>> horisontal_wires_container;
+	std::vector<std::unique_ptr<Cell>> cells_container;
+	
+	std::vector<Cell*> available_cells_array; //container with available locations to move
 	std::vector<sf::Vector2f> win_condition_container;
 
-	std::shared_ptr<Cell> target_cell = nullptr;
-	std::shared_ptr<Chip> current_chip = nullptr;
+	Cell* target_cell = nullptr;
+	Chip* current_chip = nullptr;
 
 	sf::Texture game_menu_texture;
 	sf::Sprite game_menu_sprite;
