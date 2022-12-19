@@ -5,6 +5,11 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cupboards", "Cupboards\Cupboards.vcxproj", "{C0A5A259-1B04-4241-B78F-ED63739CC6BF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A4AFB65F-F0A1-48AC-AED1-DA12679E66B1}"
+	ProjectSection(SolutionItems) = preProject
+		.clang-format = .clang-format
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64

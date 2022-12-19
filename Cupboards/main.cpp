@@ -1,25 +1,27 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
-#include "Manager.h"
 #include "Cursor.h"
+#include "Manager.h"
 
 namespace
 {
-    constexpr float FPS = 1.f / 60.f;
-    constexpr uint32_t WINDOW_SIZE = 1000;
-}
+constexpr float FPS = 1.f / 60.f;
+constexpr uint32_t WINDOW_SIZE = 1000;
+
+} // namespace
 
 #ifdef GAME_DEBUG
 int main()
 #endif
 
 #ifdef RELEASE
-int WinMain()
+    int WinMain()
 #endif
 {
-    sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "Cupboards Game", sf::Style::Titlebar | sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "Cupboards Game",
+                            sf::Style::Titlebar | sf::Style::Close);
     window.setMouseCursorVisible(0);
     Manager manager;
 
@@ -27,11 +29,11 @@ int WinMain()
     float prev_time = main_clock.getElapsedTime().asSeconds();
     float time_accumulator = FPS;
 
-    //std::ofstream log_file("./data/log.txt");
+    // std::ofstream log_file("./data/log.txt");
 
     while (window.isOpen())
     {
-        //loop time calculation
+        // loop time calculation
         float current_time = main_clock.getElapsedTime().asSeconds();
         float loop_time = current_time - prev_time;
         time_accumulator += loop_time;
@@ -41,7 +43,7 @@ int WinMain()
         /*if (time_accumulator >= FPS)*/
         while (time_accumulator >= FPS)
         {
-            //event state
+            // event state
             sf::Event event;
             while (window.pollEvent(event))
             {
@@ -50,10 +52,10 @@ int WinMain()
                 manager.processInput(event);
             }
 
-            //update state
+            // update state
             manager.update(FPS);
 
-            //render state
+            // render state
             window.clear();
             manager.render(window);
 
